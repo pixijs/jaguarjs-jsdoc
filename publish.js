@@ -223,6 +223,10 @@ function buildNav(members) {
                 events: find({
                     kind: 'event',
                     memberof: v.longname
+                }),
+                classes: find({
+                    kind: 'class',
+                    memberof: v.longname
                 })
             });
         });
