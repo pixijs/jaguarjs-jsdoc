@@ -44,7 +44,7 @@ function needsSignature(doclet) {
         needsSig = true;
     }
     // typedefs that contain functions get a signature, too
-    else if (doclet.kind === 'typedef' && doclet.type && doclet.type.names &&
+    else if ((doclet.kind === 'typedef' || doclet.kind === 'interface') && doclet.type && doclet.type.names &&
         doclet.type.names.length) {
         for (var i = 0, l = doclet.type.names.length; i < l; i++) {
             if (doclet.type.names[i].toLowerCase() === 'function') {
@@ -196,6 +196,7 @@ function attachModuleSymbols(doclets, modules) {
  * @param {array<object>} members.modules
  * @param {array<object>} members.namespaces
  * @param {array<object>} members.tutorials
+ * @param {array<object>} members.interfaces
  * @param {array<object>} members.events
  * @return {string} The HTML for the navigation sidebar.
  */
@@ -218,6 +219,10 @@ function buildNav(members) {
                 }),
                 typedefs: find({
                     kind: 'typedef',
+                    memberof: v.longname
+                }),
+                interfaces: find({
+                    kind: 'interface',
                     memberof: v.longname
                 }),
                 events: find({
@@ -244,6 +249,10 @@ function buildNav(members) {
                 }),
                 typedefs: find({
                     kind: 'typedef',
+                    memberof: v.longname
+                }),
+	            interfaces: find({
+                    kind: 'interface',
                     memberof: v.longname
                 }),
                 events: find({
@@ -460,7 +469,8 @@ exports.publish = function(taffyData, opts, tutorials) {
     var namespaces = taffy(members.namespaces);
     var mixins = taffy(members.mixins);
     var externals = taffy(members.externals);
-    
+    var interfaces = taffy(members.interfaces);
+
     for (var longname in helper.longnameToUrl) {
         if ( hasOwnProp.call(helper.longnameToUrl, longname) ) {
             var myClasses = helper.find(classes, {longname: longname});
@@ -487,6 +497,11 @@ exports.publish = function(taffyData, opts, tutorials) {
             if (myExternals.length) {
                 generate('External: ' + myExternals[0].name, myExternals, helper.longnameToUrl[longname]);
             }
+
+	        var myInterfaces = helper.find(interfaces, {longname: longname});
+	        if (myInterfaces.length) {
+		        generate('Interface: ' + myInterfaces[0].name, myInterfaces, helper.longnameToUrl[longname]);
+	        }
         }
     }
 
